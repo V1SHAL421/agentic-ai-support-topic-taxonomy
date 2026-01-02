@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
-from app.llm.llm_inference import infer, validate_output
+from app.llm.llm_inference import infer
+from app.schemas.taxonomy_data import QueryRequest
 from app.system_prompt import system_prompt
 from app.taxonomy.tree import TaxonomyTree
 from app.constants import TAXONOMY_DATA
@@ -12,14 +13,15 @@ async def health_check():
     return {"status": "healthy"}
 
 @app.post("/infer")
-async def infer_endpoint(user_query: str):
+async def infer_endpoint(request: QueryRequest):
+    user_query = request.user_query
     model = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-    inference_output = infer(model, user_query, system_prompt)
-    validated_output = validate_output(inference_output)
+    validated_output = infer(model, system_prompt, user_query)
     taxonomy_tree = TaxonomyTree(TAXONOMY_DATA)
     if taxonomy_tree.validate_path(validated_output):
         return validated_output
-
+    else:
+        raise HTTPException(status_code=400, detail="Invalid taxonomy path")
 
 """
 Primary:

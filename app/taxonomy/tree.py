@@ -33,7 +33,7 @@ class TaxonomyTree:
                     secondary_node.children.append(tertiary_node)
 
     def validate_path(self, llm_output: TaxonomyOutput) -> bool:
-        primary_node = next(node for node in self.root.children if node.value == llm_output.primary_topic)
+        primary_node = next((node for node in self.root.children if node.value == llm_output.primary_topic), None)
         if not primary_node:
             # raise ValueError(f"Primary topic '{llm_output.primary_topic}' not found in the tree.")
             return False

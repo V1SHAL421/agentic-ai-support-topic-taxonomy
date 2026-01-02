@@ -1,5 +1,4 @@
-from typing import Literal
-from pydantic import BaseModel, confloat
+from pydantic import BaseModel
 
 class TaxonomyData(BaseModel):
     primary_to_secondary_data: dict[str, list[str]]
@@ -10,3 +9,6 @@ class TaxonomyOutput(BaseModel):
     secondary_topic: str
     tertiary_topic: str
     confidence: float
+
+class QueryRequest(BaseModel):
+    user_query: str
